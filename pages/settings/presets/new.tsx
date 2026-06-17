@@ -374,3 +374,8 @@ export default function NewPreset() {
     </AppLayout>
   );
 }
+export async function getServerSideProps() {
+
+  return { props: {} };
+
+}
