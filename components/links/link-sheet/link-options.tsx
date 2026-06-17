@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import ConfidentialViewSection from "@/ee/features/permissions/components/confidential-view/confidential-view-section";
+const ConfidentialViewSection = (_props: any) => null;
 import { PlanEnum } from "@/ee/stripe/constants";
 import { LinkAudienceType, LinkType } from "@prisma/client";
 import { LinkPreset } from "@prisma/client";
