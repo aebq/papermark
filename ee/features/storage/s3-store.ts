@@ -35,10 +35,16 @@ export class MultiRegionS3Store extends S3Store {
       },
     };
 
-    super({
-      partSize: 8 * 1024 * 1024, // 8MiB parts
-      s3ClientConfig: superS3Config,
-    });
+    if (euConfig.endpoint) {
+          superS3Config.endpoint = euConfig.endpoint;
+          superS3Config.forcePathStyle = true;
+          superS3Config.requestChecksumCalculation = "WHEN_REQUIRED";
+        }
+    
+        super({
+          partSize: 8 * 1024 * 1024, // 8MiB parts
+          s3ClientConfig: superS3Config,
+        });
 
     // Store configurations
     this.euConfig = euConfig;
@@ -52,6 +58,12 @@ export class MultiRegionS3Store extends S3Store {
         secretAccessKey: euConfig.secretAccessKey,
       },
     };
+
+    if (euConfig.endpoint) {
+      euS3Config.endpoint = euConfig.endpoint;
+      euS3Config.forcePathStyle = true;
+      euS3Config.requestChecksumCalculation = "WHEN_REQUIRED";
+    }
 
     this.euClient = new S3(euS3Config);
 
