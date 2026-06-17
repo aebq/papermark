@@ -1,6 +1,6 @@
 "use client";
 
-import { PermissionsSheet as PermissionsSheetEE } from "@/ee/features/permissions/components/permissions-sheet";
+const PermissionsSheetEE = (_props: any) => null; 
 
 export function PermissionsSheet(props: any) {
   return <PermissionsSheetEE {...props} />;
