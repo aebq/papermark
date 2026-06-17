@@ -5,7 +5,7 @@ import { defineConfig, timeout } from "@trigger.dev/sdk";
 
 export default defineConfig({
   project: "proj_pdxstcpfklpketsabjto",
-  dirs: ["./lib/trigger", "./ee/**/lib/trigger"],
+  dirs: ["./lib/trigger"],
   maxDuration: timeout.None, // no max duration
   retries: {
     enabledInDev: false,
