@@ -1897,3 +1897,8 @@ export default function Branding() {
     </AppLayout>
   );
 }
+export async function getServerSideProps() {
+
+  return { props: {} };
+
+}
