@@ -881,3 +881,8 @@ export default function ViewPage() {
     </div>
   );
 }
+export async function getServerSideProps() {
+
+  return { props: {} };
+
+}
