@@ -355,7 +355,43 @@ const nextConfig = {
 
     // Stub out @google-cloud/kms - it's an optional dependency of @libpdf/core
     // that we don't use (only needed for KMS-based PDF encryption)
+    // --- OSS self-host : alias des modules ee/ non publiés vers des stubs ---
+    const ossStub = new URL("./lib/oss-stub.js", import.meta.url).pathname;
+    const ossLinkMeta = new URL(
+      "./lib/oss-resolve-public-link-meta.js",
+      import.meta.url,
+    ).pathname;
+
+    const ossMissing = [
+      "@/ee/features/billing/dataroom-trial/lib/trigger/send-scheduled-email",
+      "@/ee/features/branding/components/banner-editor",
+      "@/ee/features/branding/components/branding-link-preview-form",
+      "@/ee/features/branding/components/branding-social-preview-readonly",
+      "@/ee/features/branding/components/collapsible-branding-section",
+      "@/ee/features/branding/components/dataroom-layout-preset-cards",
+      "@/ee/features/branding/components/visitor-language-card",
+      "@/ee/features/branding/lib/dataroom-banner",
+      "@/ee/features/branding/lib/dataroom-preview-presets",
+      "@/ee/features/branding/lib/dataroom-viewer-layout",
+      "@/ee/features/branding/lib/use-logo-tone",
+      "@/ee/features/permissions/components/confidential-view/confidential-view-overlay",
+      "@/ee/features/permissions/components/confidential-view/confidential-view-section",
+      "@/ee/features/request-lists/components/request-list-settings-card",
+      "@/ee/features/request-lists/components/request-list-view",
+      "@/ee/features/request-lists/components/viewer/request-list-button",
+      "@/ee/features/request-lists/components/viewer/request-list-sheet",
+      "@/ee/features/request-lists/lib/events",
+      "@/ee/features/request-lists/lib/swr/use-viewer-request-list",
+      "@/ee/limits/can-create-premium-team",
+      "@/ee/limits/can-create-unlimited-team",
+      "@/lib/api/auth/restricted-tokens",
+      "@/lib/oauth/scopes",
+      "@/lib/trigger/send-scheduled-email",
+    ];
+
     config.resolve.alias = {
+      ...Object.fromEntries(ossMissing.map((m) => [m + "$", ossStub])),
+      "@/ee/features/branding/lib/resolve-public-link-meta$": ossLinkMeta,
       ...config.resolve.alias,
       "@google-cloud/kms": false,
       "@google-cloud/secret-manager": false,
