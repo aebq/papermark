@@ -32,6 +32,7 @@ import {
 } from "@/lib/types";
 
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import DocumentLoader from "@/components/ui/document-loader";
 import CustomMetaTag from "@/components/view/custom-metatag";
 import DataroomView from "@/components/view/dataroom/dataroom-view";
 import DocumentView from "@/components/view/document-view";
@@ -390,9 +391,7 @@ function ViewPageInner({
 
   if (router.isFallback) {
     return (
-      <div className="flex h-screen items-center justify-center bg-black">
-        <LoadingSpinner className="h-20 w-20" />
-      </div>
+      <DocumentLoader />
     );
   }
 
