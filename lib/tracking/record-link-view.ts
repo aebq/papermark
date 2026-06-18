@@ -1,6 +1,6 @@
 import { NextRequest, userAgent } from "next/server";
 
-import { geolocation, ipAddress } from "@vercel/functions";
+import { geolocation, ipAddress, waitUntil } from "@vercel/functions";
 
 import { recordLinkViewTB } from "@/lib/tinybird";
 import { isBot } from "@/lib/utils/user-agent";
@@ -102,21 +102,26 @@ export async function recordLinkView({
     city: geo.city || "Unknown",
   };
 
-  const [, ,] = await Promise.all([
-    // record link view in Tinybird
-    recordLinkViewTB(clickData),
+  // Fire-and-forget: run analytics, notifications and webhooks in the
+  // background so the view response returns immediately. The viewId is already
+  // created above, so nothing the caller needs depends on these completing.
+  waitUntil(
+    Promise.all([
+      // record link view in Tinybird
+      recordLinkViewTB(clickData),
 
-    // send email notification
-    enableNotification ? sendNotification({ viewId, locationData }) : null,
+      // send email notification
+      enableNotification ? sendNotification({ viewId, locationData }) : null,
 
-    // send webhook event
-    !isPaused
-      ? sendLinkViewWebhook({
-          teamId,
-          clickData,
-        })
-      : null,
-  ]);
+      // send webhook event
+      !isPaused
+        ? sendLinkViewWebhook({
+            teamId,
+            clickData,
+          })
+        : null,
+    ]).catch(() => {}),
+  );
 
   return clickData;
 }
