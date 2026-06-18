@@ -170,23 +170,33 @@ export default async function handle(
         (view) => !excludedViewIdSet.has(view.id),
       );
 
-      const [duration, totalDocumentDuration] = await Promise.all([
-        getTotalAvgPageDuration({
-          documentId: docId,
-          excludedLinkIds: "",
-          excludedViewIds: excludedViewIdsString,
-          since: 0,
-        }),
-        getTotalDocumentDuration({
-          documentId: docId,
-          excludedLinkIds: "",
-          excludedViewIds: excludedViewIdsString,
-          since: 0,
-        }),
-      ]);
+      // Tinybird powers per-page durations. If it isn't configured or is
+      // unreachable, degrade gracefully so views/viewers (from Postgres) still
+      // load instead of failing the whole request with a 500.
+      let duration: { data: any[] } = { data: [] };
+      let totalDocumentDuration: { data: any[] } = { data: [] };
+      try {
+        [duration, totalDocumentDuration] = await Promise.all([
+          getTotalAvgPageDuration({
+            documentId: docId,
+            excludedLinkIds: "",
+            excludedViewIds: excludedViewIdsString,
+            since: 0,
+          }),
+          getTotalDocumentDuration({
+            documentId: docId,
+            excludedLinkIds: "",
+            excludedViewIds: excludedViewIdsString,
+            since: 0,
+          }),
+        ]);
+      } catch (e) {
+        // Tinybird unavailable — keep empty durations.
+      }
 
       // Calculate average completion rate for all filtered views
       let avgCompletionRate = 0;
+      try {
       if (filteredViews.length > 0) {
         if (document.type === "video") {
           // For video documents, calculate based on unique watch time
@@ -258,6 +268,9 @@ export default async function handle(
             completionRates.reduce((sum, rate) => sum + rate, 0) /
             completionRates.length;
         }
+      }
+      } catch (e) {
+        // Tinybird unavailable — completion rate stays 0.
       }
 
       const stats = {
