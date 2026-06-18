@@ -9,7 +9,6 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
-import sanitizeHtml from "sanitize-html";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import { useDebounce } from "use-debounce";
@@ -273,11 +272,8 @@ export default function Branding() {
       return "Welcome message cannot be empty";
     }
 
-    // Strip HTML tags and validate plain text only
-    const sanitized = sanitizeHtml(message, {
-      allowedTags: [],
-      allowedAttributes: {},
-    });
+    // Strip HTML tags and validate plain text only (browser-safe)
+    const sanitized = message.replace(/<[^>]*>/g, "");
 
     if (sanitized !== message) {
       return "Welcome message must contain only plain text";
