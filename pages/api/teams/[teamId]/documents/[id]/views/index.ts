@@ -409,17 +409,27 @@ export default async function handle(
         team.plan === "free" && offset >= LIMITS.views ? [] : views;
 
       let viewsWithDuration;
-      if (document.type === "video") {
-        const videoEvents = await getVideoEventsByDocument({
-          document_id: docId,
-        });
-        viewsWithDuration = await getVideoViews(
-          limitedViews,
-          document,
-          videoEvents,
-        );
-      } else {
-        viewsWithDuration = await getDocumentViews(limitedViews, document);
+      try {
+        if (document.type === "video") {
+          const videoEvents = await getVideoEventsByDocument({
+            document_id: docId,
+          });
+          viewsWithDuration = await getVideoViews(
+            limitedViews,
+            document,
+            videoEvents,
+          );
+        } else {
+          viewsWithDuration = await getDocumentViews(limitedViews, document);
+        }
+      } catch (e) {
+        // Tinybird powers per-view durations. If it's unavailable, still return
+        // the views (from Postgres) with a zero duration instead of a 500.
+        viewsWithDuration = limitedViews.map((view) => ({
+          ...view,
+          totalDuration: 0,
+          completionRate: 0,
+        }));
       }
 
       // Add internal flag to all views
