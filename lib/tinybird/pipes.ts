@@ -4,7 +4,13 @@ import { z } from "zod";
 import { VIDEO_EVENT_TYPES } from "../constants";
 import { WEBHOOK_TRIGGERS } from "../webhook/constants";
 
-const tb = new Tinybird({ token: process.env.TINYBIRD_TOKEN! });
+const tb = new Tinybird({
+  token: process.env.TINYBIRD_TOKEN!,
+  // Honor the workspace region (e.g. EU). Defaults to US if unset.
+  ...(process.env.TINYBIRD_API_URL
+    ? { baseUrl: process.env.TINYBIRD_API_URL }
+    : {}),
+});
 
 export const getTotalAvgPageDuration = tb.buildPipe({
   pipe: "get_total_average_page_duration__v5",
