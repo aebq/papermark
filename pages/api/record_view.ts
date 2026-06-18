@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { waitUntil } from "@vercel/functions";
 import { z } from "zod";
 
 import { newId } from "@/lib/id-helper";
@@ -116,16 +117,18 @@ export default async function handle(
       .json({ error: `Invalid body: ${result.error.message}` });
   }
 
-  try {
-    await publishPageView(result.data);
+  // Fire-and-forget: record the page view in Tinybird in the background so the
+  // viewer is not blocked waiting on analytics (and a misconfigured/slow
+  // Tinybird never delays or fails the response).
+  waitUntil(
+    publishPageView(result.data).catch((error) => {
+      log({
+        message: `Failed to record view (tinybird) for ${linkId}. \n\n ${error}`,
+        type: "error",
+        mention: true,
+      });
+    }),
+  );
 
-    res.status(200).json({ message: "View recorded" });
-  } catch (error) {
-    log({
-      message: `Failed to record view (tinybird) for ${linkId}. \n\n ${error}`,
-      type: "error",
-      mention: true,
-    });
-    res.status(500).json({ message: (error as Error).message });
-  }
+  res.status(200).json({ message: "View recorded" });
 }
