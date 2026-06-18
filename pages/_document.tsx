@@ -8,6 +8,11 @@ export default function Document() {
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       <body className="">
         <Main />
