@@ -12,6 +12,7 @@ import { useDisablePrint } from "@/lib/hooks/use-disable-print";
 import { LinkWithDocument, NotionTheme } from "@/lib/types";
 
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import DocumentLoader from "@/components/ui/document-loader";
 import AccessForm, {
   DEFAULT_ACCESS_FORM_DATA,
   DEFAULT_ACCESS_FORM_TYPE,
@@ -304,11 +305,7 @@ export default function DocumentView({
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <LoadingSpinner className="h-20 w-20" />
-      </div>
-    );
+    return <DocumentLoader />;
   }
 
   return (
@@ -335,9 +332,7 @@ export default function DocumentView({
           previewToken={previewToken}
         />
       ) : (
-        <div className="flex h-screen items-center justify-center">
-          <LoadingSpinner className="h-20 w-20" />
-        </div>
+        <DocumentLoader />
       )}
     </div>
   );
