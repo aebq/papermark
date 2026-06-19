@@ -727,11 +727,20 @@ export async function POST(request: NextRequest) {
       let newView: { id: string } | null = null;
       if (!isPreview) {
         console.time("create-view");
+        // Capture coarse geolocation (set by Vercel's edge) so the dashboard can
+        // show city/country without depending on Tinybird.
+        const viewerCountry =
+          request.headers.get("x-vercel-ip-country") || undefined;
+        const rawCity = request.headers.get("x-vercel-ip-city");
+        const viewerCity = rawCity ? decodeURIComponent(rawCity) : undefined;
+
         newView = await prisma.view.create({
           data: {
             linkId: linkId,
             viewerEmail: effectiveEmail,
             viewerName: effectiveName,
+            viewerCountry,
+            viewerCity,
             documentId: documentId,
             teamId: link.teamId!,
             viewerId: viewer?.id ?? undefined,
