@@ -102,6 +102,72 @@ export async function recordLinkView({
     city: geo.city || "Unknown",
   };
 
+  // Rich, ready-to-display details for the owner notification email.
+  const countryName = (() => {
+    try {
+      return geo.country
+        ? (new Intl.DisplayNames(["en"], { type: "region" }).of(geo.country) ??
+            geo.country)
+        : null;
+    } catch {
+      return geo.country || null;
+    }
+  })();
+  const notificationDetails = {
+    location:
+      [
+        geo.city && geo.city !== "Unknown" ? geo.city : null,
+        region && region !== "Unknown" ? region : null,
+        countryName,
+      ]
+        .filter(Boolean)
+        .join(", ") || null,
+    time:
+      new Date()
+        .toLocaleString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: "UTC",
+        })
+        .replace(/,([^,]*)$/, " at$1") + " UTC",
+    browser:
+      (
+        [
+          clickData.browser !== "Unknown" ? clickData.browser : null,
+          clickData.browser_version !== "Unknown"
+            ? clickData.browser_version
+            : null,
+        ]
+          .filter(Boolean)
+          .join(" ") +
+        (clickData.os !== "Unknown"
+          ? ` on ${clickData.os}${
+              clickData.os_version !== "Unknown"
+                ? " " + clickData.os_version
+                : ""
+            }`
+          : "")
+      ).trim() || null,
+    device:
+      [
+        clickData.device_vendor !== "Unknown" ? clickData.device_vendor : null,
+        clickData.device_model !== "Unknown"
+          ? clickData.device_model
+          : clickData.device,
+      ]
+        .filter(Boolean)
+        .join(" ") || clickData.device,
+    // Raw IP, included per explicit request. NOTE: the analytics pipeline
+    // intentionally omits EU IPs for GDPR; this includes it in the private
+    // owner notification only.
+    ip: typeof ip === "string" && ip.trim().length > 0 ? ip : null,
+  };
+
   // Fire-and-forget: run analytics, notifications and webhooks in the
   // background so the view response returns immediately. The viewId is already
   // created above, so nothing the caller needs depends on these completing.
@@ -111,7 +177,9 @@ export async function recordLinkView({
       recordLinkViewTB(clickData),
 
       // send email notification
-      enableNotification ? sendNotification({ viewId, locationData }) : null,
+      enableNotification
+        ? sendNotification({ viewId, locationData, notificationDetails })
+        : null,
 
       // send webhook event
       !isPaused
