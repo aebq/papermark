@@ -271,7 +271,7 @@ export default function VisitorsTable({
             <TableRow className="*:whitespace-nowrap *:font-medium hover:bg-transparent">
               <TableHead>Name</TableHead>
               <TableHead>View Duration</TableHead>
-              <TableHead>View Completion</TableHead>
+              <TableHead>Location</TableHead>
               <TableHead>Last Viewed</TableHead>
               <TableHead className="text-center sm:text-right"></TableHead>
             </TableRow>
@@ -382,15 +382,17 @@ export default function VisitorsTable({
                           {durationFormat(view.totalDuration)}
                         </div>
                       </TableCell>
-                      {/* Completion */}
-                      <TableCell className="flex justify-start">
-                        <div className="text-sm text-muted-foreground">
-                          <Gauge
-                            value={view.completionRate}
-                            size={"small"}
-                            showValue={true}
-                          />
-                        </div>
+                      {/* Location */}
+                      <TableCell className="text-sm text-muted-foreground">
+                        {(view as any).viewerCity ||
+                        (view as any).viewerCountry
+                          ? [
+                              (view as any).viewerCity,
+                              (view as any).viewerCountry,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")
+                          : "—"}
                       </TableCell>
                       {/* Last Viewed */}
                       <TableCell className="text-sm text-muted-foreground">
@@ -559,15 +561,17 @@ export default function VisitorsTable({
                               <ChevronDown className="chevron h-4 w-4 shrink-0 transition-transform duration-200" />
                             </div>
                           </TableCell>
-                          {/* Completion */}
-                          <TableCell className="flex justify-start">
-                            <div className="text-sm text-muted-foreground">
-                              <Gauge
-                                value={view.completionRate}
-                                size={"small"}
-                                showValue={true}
-                              />
-                            </div>
+                          {/* Location */}
+                          <TableCell className="text-sm text-muted-foreground">
+                            {(view as any).viewerCity ||
+                            (view as any).viewerCountry
+                              ? [
+                                  (view as any).viewerCity,
+                                  (view as any).viewerCountry,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ")
+                              : "—"}
                           </TableCell>
                           {/* Last Viewed */}
                           <TableCell className="text-sm text-muted-foreground">
@@ -828,12 +832,8 @@ const VisitorBlurred = () => {
           {durationFormat(10000)}
         </div>
       </TableCell>
-      {/* Completion */}
-      <TableCell className="flex justify-start">
-        <div className="text-sm text-muted-foreground">
-          <Gauge value={90} size={"small"} showValue={true} />
-        </div>
-      </TableCell>
+      {/* Location */}
+      <TableCell className="text-sm text-muted-foreground">—</TableCell>
       {/* Last Viewed */}
       <TableCell className="text-sm text-muted-foreground">
         <time
