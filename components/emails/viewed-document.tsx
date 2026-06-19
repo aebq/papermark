@@ -25,12 +25,20 @@ export default function ViewedDocument({
   linkName = "Pitchdeck",
   viewerEmail,
   locationString,
+  details,
 }: {
   documentId: string;
   documentName: string;
   linkName: string;
   viewerEmail: string | null;
   locationString?: string;
+  details?: {
+    location: string | null;
+    time: string | null;
+    browser: string | null;
+    device: string | null;
+    ip: string | null;
+  };
 }) {
   return (
     <Html>
@@ -65,6 +73,38 @@ export default function ViewedDocument({
               ) : null}{" "}
               from the link <span className="font-semibold">{linkName}</span>.
             </Text>
+            {details ? (
+              <Section className="my-6 rounded-lg border border-solid border-gray-200 p-4">
+                {details.location ? (
+                  <Text className="m-0 mb-1 text-sm leading-6 text-black">
+                    <span className="font-semibold">Location:</span>{" "}
+                    {details.location}
+                  </Text>
+                ) : null}
+                {details.time ? (
+                  <Text className="m-0 mb-1 text-sm leading-6 text-black">
+                    <span className="font-semibold">Time:</span> {details.time}
+                  </Text>
+                ) : null}
+                {details.browser ? (
+                  <Text className="m-0 mb-1 text-sm leading-6 text-black">
+                    <span className="font-semibold">Browser:</span>{" "}
+                    {details.browser}
+                  </Text>
+                ) : null}
+                {details.device ? (
+                  <Text className="m-0 mb-1 text-sm leading-6 text-black">
+                    <span className="font-semibold">Device:</span>{" "}
+                    {details.device}
+                  </Text>
+                ) : null}
+                {details.ip ? (
+                  <Text className="m-0 text-sm leading-6 text-black">
+                    <span className="font-semibold">IP:</span> {details.ip}
+                  </Text>
+                ) : null}
+              </Section>
+            ) : null}
             <Text className="text-sm leading-6 text-black">
               You can get the detailed engagement insights like time-spent per
               page and total duration for this document on DeepCity.
