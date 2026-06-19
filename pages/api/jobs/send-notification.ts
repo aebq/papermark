@@ -33,13 +33,20 @@ export default async function handle(
     return;
   }
 
-  const { viewId, locationData } = req.body as {
+  const { viewId, locationData, notificationDetails } = req.body as {
     viewId: string;
     locationData: {
       continent: string | null;
       country: string;
       region: string;
       city: string;
+    };
+    notificationDetails?: {
+      location: string | null;
+      time: string | null;
+      browser: string | null;
+      device: string | null;
+      ip: string | null;
     };
   };
 
@@ -161,6 +168,7 @@ export default async function handle(
       linkName,
       includeLocation,
       locationString,
+      notificationDetails,
     });
 
     res.status(200).json({ message: "Successfully sent notification", viewId });
@@ -183,6 +191,7 @@ async function sendImmediateEmail({
   linkName,
   includeLocation,
   locationString,
+  notificationDetails,
 }: {
   view: {
     viewType: string;
@@ -197,6 +206,13 @@ async function sendImmediateEmail({
   linkName: string;
   includeLocation: boolean;
   locationString: string;
+  notificationDetails?: {
+    location: string | null;
+    time: string | null;
+    browser: string | null;
+    device: string | null;
+    ip: string | null;
+  };
 }) {
   if (view.viewType === "DOCUMENT_VIEW") {
     if (teamIsPaused) {
@@ -215,6 +231,7 @@ async function sendImmediateEmail({
         viewerEmail: view.viewerEmail,
         teamMembers: ccRecipients,
         locationString: includeLocation ? locationString : undefined,
+        details: includeLocation ? notificationDetails : undefined,
       });
     }
   } else {
@@ -234,6 +251,7 @@ async function sendImmediateEmail({
         linkName,
         teamMembers: ccRecipients,
         locationString: includeLocation ? locationString : undefined,
+        details: includeLocation ? notificationDetails : undefined,
       });
     }
   }
