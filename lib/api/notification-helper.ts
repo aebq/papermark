@@ -3,6 +3,7 @@ import { log } from "@/lib/utils";
 export default async function sendNotification({
   viewId,
   locationData,
+  notificationDetails,
 }: {
   viewId: string;
   locationData: {
@@ -11,6 +12,13 @@ export default async function sendNotification({
     region: string;
     city: string;
   };
+  notificationDetails?: {
+    location: string | null;
+    time: string | null;
+    browser: string | null;
+    device: string | null;
+    ip: string | null;
+  };
 }) {
   return await fetch(`${process.env.NEXTAUTH_URL}/api/jobs/send-notification`, {
     method: "POST",
@@ -18,7 +26,7 @@ export default async function sendNotification({
       "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.INTERNAL_API_KEY}`,
     },
-    body: JSON.stringify({ viewId: viewId, locationData }),
+    body: JSON.stringify({ viewId: viewId, locationData, notificationDetails }),
   })
     .then(() => {})
     .catch((error) => {
