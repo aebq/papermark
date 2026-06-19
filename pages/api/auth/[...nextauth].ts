@@ -44,6 +44,35 @@ const getAuthOptions = (req: NextApiRequest): NextAuthOptions => {
           return false;
         }
 
+        // ─── Private instance: restrict who can sign up ───
+        // Allow the owner (ALLOWED_SIGNUP_EMAILS), anyone who already has an
+        // account, or anyone with a pending team invitation. Block everyone
+        // else so strangers/bots can't register on this instance.
+        {
+          const allowlist = (process.env.ALLOWED_SIGNUP_EMAILS ?? "")
+            .split(",")
+            .map((e) => e.trim().toLowerCase())
+            .filter(Boolean);
+          const isAllowlisted = allowlist.includes(user.email.toLowerCase());
+
+          if (!isAllowlisted) {
+            const existingUser = await prisma.user.findUnique({
+              where: { email: user.email },
+              select: { id: true },
+            });
+            const pendingInvite = existingUser
+              ? null
+              : await prisma.invitation.findFirst({
+                  where: { email: user.email, expires: { gt: new Date() } },
+                  select: { token: true },
+                });
+
+            if (!existingUser && !pendingInvite) {
+              return false;
+            }
+          }
+        }
+
         // ─── SSO Enforcement ───
         // If user is NOT signing in via SAML, check if their domain requires SSO
         if (
