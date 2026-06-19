@@ -41,11 +41,11 @@ export const Footer = ({
       <Hr />
       <Section className="text-gray-400">
         <Text className="text-xs">
-          © {new Date().getFullYear()} Papermark, Inc. All rights reserved.{" "}
+          © {new Date().getFullYear()} All rights reserved.{" "}
           {withAddress && (
             <>
               <br />
-              1111B S Governors Ave #28117, Dover, DE 19904
+              
             </>
           )}
         </Text>
