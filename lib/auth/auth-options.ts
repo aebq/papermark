@@ -193,36 +193,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    // Lock down sign-up on this private instance: only the owner (allowlist),
-    // existing users, or people with a pending team invitation may sign in.
-    signIn: async ({ user }) => {
-      const email = user?.email?.toLowerCase();
-      if (!email) return false;
-
-      // 1) explicit allowlist (your own email[s]), comma-separated env var
-      const allowlist = (process.env.ALLOWED_SIGNUP_EMAILS ?? "")
-        .split(",")
-        .map((e) => e.trim().toLowerCase())
-        .filter(Boolean);
-      if (allowlist.includes(email)) return true;
-
-      // 2) existing users can always sign back in
-      const existingUser = await prisma.user.findUnique({
-        where: { email },
-        select: { id: true },
-      });
-      if (existingUser) return true;
-
-      // 3) users with a pending (non-expired) team invitation may join
-      const invite = await prisma.invitation.findFirst({
-        where: { email, expires: { gt: new Date() } },
-        select: { token: true },
-      });
-      if (invite) return true;
-
-      // otherwise: block new sign-ups
-      return false;
-    },
     jwt: async (params) => {
       const { token, user, trigger, account } = params;
       if (!token.email) {
