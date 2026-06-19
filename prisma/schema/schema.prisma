@@ -155,6 +155,8 @@ model View {
   dataroomViewId      String? // This is the view ID from the dataroom
   viewerEmail         String? // Email of the viewer if known
   viewerName          String? // Name of the viewer if known
+  viewerCountry       String? // Country code captured at view time (e.g. "FR")
+  viewerCity          String? // City captured at view time (e.g. "Toulouse")
   verified            Boolean              @default(false) // Whether the viewer email has been verified
   viewedAt            DateTime             @default(now())
   downloadedAt        DateTime? // This is the time the document was downloaded
