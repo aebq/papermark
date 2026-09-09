@@ -177,7 +177,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@react-email/ui": "^6.3.2",
+    "@react-email/ui": "^6.9.5",
     "@tailwindcss/forms": "^0.5.11",
     "@trigger.dev/build": "4.4.6",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
